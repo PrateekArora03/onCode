@@ -17,15 +17,19 @@ router.post("/login", (req, res, next) => {
     if (!user) {
       return res
         .status(400)
-        .json({ status: "failed", message: "user not found" });
+        .json({ status: "failed", message: "Invaild email or user not found" });
     }
     if (!user.isValidatePassword(password)) {
       return res
         .status(400)
         .json({ status: "failed", message: "Invaild Password" });
     }
-    console.log(Auth.genarateToken(user.id));
-    res.json({ status: "sucess", message: "user login" });
+    // console.log(Auth.genarateToken(user.id));
+    res.json({
+      status: "sucess",
+      message: "user login",
+      token: Auth.genarateToken(user.id)
+    });
   });
 });
 
