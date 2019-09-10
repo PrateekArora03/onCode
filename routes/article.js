@@ -7,7 +7,9 @@ const Comment = require("../model/comment");
 router.post("/new", (req, res, next) => {
   Article.create(req.body, (err, post) => {
     if (err) return next(err);
-    res.json({ status: "sucess", message: "post added" });
+    post.user = req.body.userid;
+    post.save();
+    res.json({ status: "sucess", message: "post added", post });
   });
 });
 
