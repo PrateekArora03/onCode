@@ -5,31 +5,28 @@ const Comment = require("../model/comment");
 
 // create post
 router.post("/new", (req, res, next) => {
-  Article.create(req.body, (err, post) => {
+  Comment.create(req.body, (err, post) => {
     if (err) return next(err);
     post.user = req.body.userid;
     post.save();
-    res.json({ status: "sucess", message: "post added", post });
+    res.json({ status: "sucess", message: "Comment added" });
   });
 });
 
 //update routes
 router.post("/:id/update", (req, res, next) => {
   let id = req.params.id;
-  Article.findOneAndUpdate(id, req.body, (err, updatedPost) => {
+  Comment.findOneAndUpdate(id, req.body, (err, updatedPost) => {
     if (err) return next(err);
-    res.json({ status: "sucess", message: "post updated" });
+    res.json({ status: "sucess", message: "Comment updated" });
   });
 });
 //delete Article and comments
 router.get("/:id/delete", (req, res, next) => {
   let id = req.params.id;
-  Article.findOneAndDelete(id, (err, msg) => {
+  Comment.findOneAndDelete(id, (err, msg) => {
     if (err) return next(err);
-    Comment.deleteMany({ post: id }, (err, message) => {
-      if (err) return next(err);
-      res.json({ status: "sucess", message: "post deleted" });
-    });
+    Article.findByIdAndUpdate(msg.post, { $pull: { comments: id } });
   });
 });
 
