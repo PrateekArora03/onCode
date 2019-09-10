@@ -4,17 +4,17 @@ const Article = require("../model/article");
 const Comment = require("../model/comment");
 
 // create post
-router.post("/new", (req, res, next) => {
+router.post("/:id", (req, res, next) => {
+  req.body.userid = req.userid;
+  req.body.post = req.params.id;
   Comment.create(req.body, (err, post) => {
     if (err) return next(err);
-    post.user = req.body.userid;
-    post.save();
     res.json({ status: "sucess", message: "Comment added" });
   });
 });
 
 //update routes
-router.post("/:id/update", (req, res, next) => {
+router.patch("/:id", (req, res, next) => {
   let id = req.params.id;
   Comment.findOneAndUpdate(id, req.body, (err, updatedPost) => {
     if (err) return next(err);
@@ -22,7 +22,7 @@ router.post("/:id/update", (req, res, next) => {
   });
 });
 //delete Article and comments
-router.get("/:id/delete", (req, res, next) => {
+router.delete("/:id", (req, res, next) => {
   let id = req.params.id;
   Comment.findOneAndDelete(id, (err, msg) => {
     if (err) return next(err);

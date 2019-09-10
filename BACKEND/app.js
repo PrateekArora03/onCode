@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const auth = require("./auth/index");
 require("dotenv").config();
 const indexRoutes = require("./routes/index");
 const userRoutes = require("./routes/user");
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRoutes);
 app.use("/user", userRoutes);
+app.use(auth.verifyToken);
 app.use("/blog", articleRoutes);
 app.use("/comment", commentRoutes);
 

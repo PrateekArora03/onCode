@@ -5,10 +5,9 @@ const Comment = require("../model/comment");
 
 // create post
 router.post("/new", (req, res, next) => {
+  req.body.userid = req.userid;
   Article.create(req.body, (err, post) => {
     if (err) return next(err);
-    post.user = req.body.userid;
-    post.save();
     res.json({ status: "sucess", message: "post added", post });
   });
 });
@@ -22,7 +21,7 @@ router.patch("/:id", (req, res, next) => {
   });
 });
 //delete Article and comments
-router.delete("/:idl", (req, res, next) => {
+router.delete("/:id", (req, res, next) => {
   let id = req.params.id;
   Article.findOneAndDelete(id, (err, msg) => {
     if (err) return next(err);

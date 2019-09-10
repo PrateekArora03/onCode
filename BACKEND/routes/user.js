@@ -12,7 +12,7 @@ router.post("/registration", (req, res, next) => {
 
 router.post("/login", (req, res, next) => {
   let { email, password } = req.body;
-  User.findOne({ email: email }, (err, user) => {
+  User.findOne({ email }, (err, user) => {
     if (err) return next(err);
     if (!user) {
       return res
@@ -24,11 +24,11 @@ router.post("/login", (req, res, next) => {
         .status(400)
         .json({ status: "failed", message: "Invaild Password" });
     }
-    // console.log(Auth.genarateToken(user.id));
+    const token = Auth.genarateToken(user.id);
     res.json({
       status: "sucess",
       message: "user login",
-      token: Auth.genarateToken(user.id)
+      token
     });
   });
 });
