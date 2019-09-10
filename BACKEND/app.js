@@ -17,8 +17,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRoutes);
 app.use("/user", userRoutes);
-app.use(auth.verifyToken);
 app.use("/blog", articleRoutes);
+app.use(auth.verifyToken);
 app.use("/comment", commentRoutes);
 
 const PORT = process.env.port || 3000;
