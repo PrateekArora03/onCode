@@ -41,13 +41,4 @@ router.delete("/:id", (req, res, next) => {
   });
 });
 
-//show single post
-router.get("/:id", (req, res, next) => {
-  let id = req.params.id;
-  Article.findById(id, (err, post) => {
-    if (err) return next(err);
-    res.json(post);
-  });
-});
-
 module.exports = router;
