@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Article = require("../model/article");
 const Comment = require("../model/comment");
+const Tag = require("../model/tag");
 const auth = require("../auth/index");
 
 //show single post
@@ -16,7 +17,10 @@ router.use(auth.verifyToken);
 // create post
 router.post("/new", (req, res, next) => {
   req.body.userid = req.userid;
-  const tags = req.body.tags;
+  const tags = req.body.tags.split(",");
+  tags.forEach(tag => {
+    tag = tag.trim().toLowerCase();
+  });
   Article.create(req.body, (err, post) => {
     if (err) return next(err);
     res.json({ status: "sucess", message: "post added", post });
