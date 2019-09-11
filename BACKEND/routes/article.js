@@ -16,6 +16,7 @@ router.use(auth.verifyToken);
 // create post
 router.post("/new", (req, res, next) => {
   req.body.userid = req.userid;
+  const tags = req.body.tags;
   Article.create(req.body, (err, post) => {
     if (err) return next(err);
     res.json({ status: "sucess", message: "post added", post });
