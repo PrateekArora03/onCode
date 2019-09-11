@@ -36,7 +36,13 @@ router.post("/login", (req, res, next) => {
 router.post("/profileupdate", Auth.verifyToken, (req, res, next) => {
   User.findOneAndUpdate(req.userid, req.body, { new: true }, (err, user) => {
     if (err) return next(err);
-    res.status(401).json({ status: "sucess", message: "user updated", user });
+    user.password = req.body.password;
+    user.save((err, updateduser) => {
+      if (err) return next(err);
+      res
+        .status(401)
+        .json({ status: "sucess", message: "user updated", updateduser });
+    });
   });
 });
 
