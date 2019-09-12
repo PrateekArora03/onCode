@@ -7,11 +7,6 @@ const tagSchema = new Schema({
   post: [{ type: Schema.Types.ObjectId, ref: "article" }]
 });
 
-tagSchema.pre("save", function(next) {
-  this.name =
-    this.name.trim()[0].toUpperCase() + this.name.slice(1).toLowerCase();
-});
-
 const Tag = mongoose.model("Tag", tagSchema);
 
 module.exports = Tag;

@@ -17,13 +17,47 @@ router.use(auth.verifyToken);
 // create post
 router.post("/new", (req, res, next) => {
   req.body.userid = req.userid;
-  const tags = req.body.tags.split(",");
-  tags.forEach(tag => {
-    tag = tag.trim().toLowerCase();
-  });
-  Article.create(req.body, (err, post) => {
+  console.log(req.body);
+  let tags = req.body.tags ? req.body.tags.split(",") : [];
+  console.log(tags);
+  let article = { ...req.body };
+  article.tags = [];
+  Article.create(article, (err, createdPost) => {
     if (err) return next(err);
-    res.json({ status: "sucess", message: "post added", post });
+    if (tags.length != 0) {
+      tags.forEach(tag => {
+        console.log("inside tags create");
+        // tag = tag.trim()[0].toUpperCase() + tag.slice(1).toLowerCase();
+        Tag.findOneAndUpdate(
+          { name: tag },
+          { $push: { post: createdPost.id } },
+          { upsert: true, new: true },
+          (err, tagData) => {
+            if (err) return next(err);
+            Article.findByIdAndUpdate(
+              createdPost.id,
+              { $push: { tags: tagData.id } },
+              { new: true },
+              (err, updatedPost) => {
+                if (err) return next(err);
+                if (tags.length === updatedPost.tags.length)
+                  return res.json({
+                    status: "success",
+                    message: "post added",
+                    updatedPost
+                  });
+              }
+            );
+          }
+        );
+      });
+    } else {
+      res.json({
+        status: "success",
+        message: "post added",
+        createdPost
+      });
+    }
   });
 });
 
