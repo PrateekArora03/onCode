@@ -8,7 +8,8 @@ const articleSchema = new Schema(
     userid: { type: Schema.Types.ObjectId, required: true },
     tags: { type: [Schema.Types.ObjectId] },
     comment: [{ type: Schema.Types.ObjectId, ref: "comment" }],
-    views: { type: Number, default: 0 }
+    views: { type: Number, default: 0 },
+    favourites: { type: Number, default: 0 }
   },
   { timestamps: true }
 );

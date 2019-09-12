@@ -3,15 +3,21 @@ const router = express.Router();
 const Article = require("../model/article");
 const Comment = require("../model/comment");
 const Tag = require("../model/tag");
+const User = require("../model/user");
 const auth = require("../auth/index");
 
 //show single post
 router.get("/:id", (req, res, next) => {
   let id = req.params.id;
-  Article.findById(id, (err, post) => {
-    if (err) return next(err);
-    res.json(post);
-  });
+  Article.findByIdAndUpdate(
+    id,
+    { $inc: { views: 1 } },
+    { new: true },
+    (err, post) => {
+      if (err) return next(err);
+      res.status(200).json(post);
+    }
+  );
 });
 router.use(auth.verifyToken);
 
@@ -42,7 +48,7 @@ router.post("/new", (req, res, next) => {
               (err, updatedPost) => {
                 if (err) return next(err);
                 if (tags.length === updatedPost.tags.length)
-                  return res.json({
+                  return res.status(201).json({
                     status: "success",
                     message: "post added",
                     updatedPost
@@ -53,7 +59,7 @@ router.post("/new", (req, res, next) => {
         );
       });
     } else {
-      res.json({
+      res.status(201).json({
         status: "success",
         message: "post added",
         createdPost
@@ -70,7 +76,7 @@ router.patch("/:id", (req, res, next) => {
     if (post.userid == req.userid) {
       Article.findOneAndUpdate(id, req.body, (err, updatedPost) => {
         if (err) return next(err);
-        res.json({ status: "sucess", message: "post updated" });
+        res.status(200).json({ status: "success", message: "post updated" });
       });
     } else {
       res.status(401).json({ status: "fail", message: "Not authorised!" });
@@ -84,9 +90,35 @@ router.delete("/:id", (req, res, next) => {
     if (err) return next(err);
     Comment.deleteMany({ post: id }, (err, deletedComment) => {
       if (err) return next(err);
-      res.json({ status: "success", message: "post deleted" });
+      res.status(200).json({ status: "success", message: "post deleted" });
     });
   });
 });
-
+//favourites
+router.get("/:articleId/favourite", (req, res, next) => {
+  const articleId = req.params.articleId;
+  User.findByIdAndUpdate(
+    req.userid,
+    { $push: { favourites: articleId } },
+    { upsert: true, new: true },
+    (err, updatedUser) => {
+      if (err) return next(err);
+      Article.findByIdAndUpdate(
+        articleId,
+        { $inc: { favourites: 1 } },
+        { new: true },
+        (err, updatedPost) => {
+          if (err) return next(err);
+          res
+            .status(201)
+            .json({
+              status: "success",
+              message: "favoutite added",
+              updatedPost
+            });
+        }
+      );
+    }
+  );
+});
 module.exports = router;
