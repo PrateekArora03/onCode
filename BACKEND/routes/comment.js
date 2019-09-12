@@ -27,7 +27,7 @@ router.patch("/:id", (req, res, next) => {
   });
 });
 
-//delete Article and comments
+//delete  comments
 router.delete("/:id", (req, res, next) => {
   let id = req.params.id;
   Comment.findById(id, (err, comment) => {

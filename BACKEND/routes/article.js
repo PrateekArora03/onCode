@@ -14,6 +14,7 @@ router.get("/:id", (req, res, next) => {
   });
 });
 router.use(auth.verifyToken);
+
 // create post
 router.post("/new", (req, res, next) => {
   req.body.userid = req.userid;
@@ -79,11 +80,11 @@ router.patch("/:id", (req, res, next) => {
 //delete Article and comments
 router.delete("/:id", (req, res, next) => {
   let id = req.params.id;
-  Article.findOneAndDelete(id, (err, msg) => {
+  Article.findOneAndDelete(id, (err, deletedArticle) => {
     if (err) return next(err);
-    Comment.deleteMany({ post: id }, (err, message) => {
+    Comment.deleteMany({ post: id }, (err, deletedComment) => {
       if (err) return next(err);
-      res.json({ status: "sucess", message: "post deleted" });
+      res.json({ status: "success", message: "post deleted" });
     });
   });
 });
