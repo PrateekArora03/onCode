@@ -33,7 +33,7 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.post("/profileupdate", Auth.verifyToken, (req, res, next) => {
+router.patch("/profileupdate", Auth.verifyToken, (req, res, next) => {
   User.findOneAndUpdate(req.userid, req.body, { new: true }, (err, user) => {
     if (err) return next(err);
     user.password = req.body.password;
@@ -43,6 +43,14 @@ router.post("/profileupdate", Auth.verifyToken, (req, res, next) => {
         .status(401)
         .json({ status: "sucess", message: "user updated", updateduser });
     });
+  });
+});
+//view user
+router.get("/:id", (req, res, next) => {
+  let id = req.params.id;
+  User.findById(id, (err, user) => {
+    if (err) return next(err);
+    res.status(200).json(user);
   });
 });
 

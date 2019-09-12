@@ -18,8 +18,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", indexRoutes);
 app.use("/user", userRoutes);
 app.use("/blog", articleRoutes);
-app.use(auth.verifyToken);
+// app.use(auth.verifyToken);
 app.use("/comment", commentRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).json({ err: "page not found" });
+});
+
+app.use((err, req, res, next) => {
+  res.json({ err });
+});
 
 const PORT = process.env.port || 3000;
 app.listen(PORT, () => console.log(`Connected on ${PORT} port.`));

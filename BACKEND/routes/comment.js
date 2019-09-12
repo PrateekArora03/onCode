@@ -3,6 +3,7 @@ const router = express.Router();
 const Article = require("../model/article");
 const Comment = require("../model/comment");
 
+// /articles/articleId/Comments
 // create post
 router.post("/:id", (req, res, next) => {
   req.body.userid = req.userid;

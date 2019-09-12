@@ -19,6 +19,7 @@ router.get("/:id", (req, res, next) => {
     }
   );
 });
+
 router.use(auth.verifyToken);
 
 // create post
@@ -55,6 +56,14 @@ router.post("/new", (req, res, next) => {
                   });
               }
             );
+
+            // option
+            var newArticle = new Article();
+            newArticle.title = "mdfhngfngnh";
+            newArticle.save(err, created);
+
+            createdPost.tags.push();
+            createdPost.save();
           }
         );
       });
@@ -74,7 +83,7 @@ router.patch("/:id", (req, res, next) => {
   Article.findById(id, (err, post) => {
     if (err) return next(err);
     if (post.userid == req.userid) {
-      Article.findOneAndUpdate(id, req.body, (err, updatedPost) => {
+      Article.findByIdAndUpdate(id, req.body, (err, updatedPost) => {
         if (err) return next(err);
         res.status(200).json({ status: "success", message: "post updated" });
       });
@@ -86,39 +95,49 @@ router.patch("/:id", (req, res, next) => {
 //delete Article and comments
 router.delete("/:id", (req, res, next) => {
   let id = req.params.id;
-  Article.findOneAndDelete(id, (err, deletedArticle) => {
+  Article.findById(id, (err, article) => {
     if (err) return next(err);
-    Comment.deleteMany({ post: id }, (err, deletedComment) => {
-      if (err) return next(err);
-      res.status(200).json({ status: "success", message: "post deleted" });
-    });
+    if (article.userid == req.userid) {
+      Article.findByIdAndDelete(id, (err, deletedArticle) => {
+        if (err) return next(err);
+        Comment.deleteMany({ post: id }, (err, deletedComment) => {
+          if (err) return next(err);
+          res.status(200).json({ status: "success", message: "post deleted" });
+        });
+      });
+    } else {
+      res.status(401).json({ status: "fail", message: "Not authorised!" });
+    }
   });
 });
 //favourites
 router.get("/:articleId/favourite", (req, res, next) => {
   const articleId = req.params.articleId;
-  User.findByIdAndUpdate(
-    req.userid,
-    { $push: { favourites: articleId } },
-    { upsert: true, new: true },
-    (err, updatedUser) => {
-      if (err) return next(err);
-      Article.findByIdAndUpdate(
-        articleId,
-        { $inc: { favourites: 1 } },
-        { new: true },
-        (err, updatedPost) => {
-          if (err) return next(err);
-          res
-            .status(201)
-            .json({
-              status: "success",
-              message: "favoutite added",
-              updatedPost
-            });
-        }
-      );
+  User.findById(req.userid, (err, user) => {
+    if (!user.favourites.includes(articleId)) {
+      user.favourites.push(articleId);
     }
-  );
+  });
+  // User.findByIdAndUpdate(
+  //   req.userid,
+  //   { $push: { favourites: articleId } },
+  //   { upsert: true, new: true },
+  //   (err, updatedUser) => {
+  //     if (err) return next(err);
+  //     Article.findByIdAndUpdate(
+  //       articleId,
+  //       { $inc: { favourites: 1 } },
+  //       { new: true },
+  //       (err, updatedPost) => {
+  //         if (err) return next(err);
+  //         res.status(201).json({
+  //           status: "success",
+  //           message: "favoutite added",
+  //           updatedPost
+  //         });
+  //       }
+  //     );
+  //   }
+  // );
 });
 module.exports = router;
