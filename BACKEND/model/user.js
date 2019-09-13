@@ -18,7 +18,7 @@ const userSchema = new Schema(
       required: true,
       lowercase: true
     },
-    password: { type: String, minlength: 4, maxlength: 15 },
+    password: { type: String, minlength: 4 },
     photo: String,
     bio: { type: String, minlength: 30, maxlength: 200 },
     tags: [{ type: Schema.Types.ObjectId, ref: "tag" }],

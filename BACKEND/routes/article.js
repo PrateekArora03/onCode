@@ -108,42 +108,49 @@ router.delete("/:id", (req, res, next) => {
     }
   });
 });
-//favourites
-router.get("/:articleId/favourite", (req, res, next) => {
-  const articleId = req.params.articleId;
+
+//Favorite Article
+router.get("/:articleId/favorite", (req, res, next) => {
+  let articleId = req.params.articleId;
   User.findById(req.userid, (err, user) => {
     if (err) return next(err);
     if (!user.favourites.includes(articleId)) {
       user.favourites.push(articleId);
-      Article.findByIdAndUpdate(
-        articleId,
-        { $inc: { favourites: 1 } },
-        { new: true },
-        (err, updatedPost) => {
-          if (err) return next(err);
-          res.status(201).json({
-            status: "success",
-            message: "favoutite added",
-            updatedPost
-          });
-        }
-      );
+      user.save((err, updateduser) => {
+        if (err) return next(err);
+        Article.findByIdAndUpdate(
+          articleId,
+          { $inc: { favouritecount: 1 } },
+          { new: true },
+          (err, updatedPost) => {
+            if (err) return next(err);
+            res.status(201).json({
+              status: "success",
+              message: "favourite added",
+              post: updatedPost,
+              user: updateduser
+            });
+          }
+        );
+      });
     } else {
       User.findByIdAndUpdate(
         req.userid,
         { $pull: { favourites: articleId } },
         { new: true },
-        (err, updatedUser) => {
+        (err, updateduser) => {
+          if (err) return next(err);
           Article.findByIdAndUpdate(
             articleId,
-            { $inc: { favourites: -1 } },
+            { $inc: { favouritecount: -1 } },
             { new: true },
             (err, updatedPost) => {
               if (err) return next(err);
               res.status(201).json({
                 status: "success",
-                message: "favoutite added",
-                updatedPost
+                message: "favourite removed",
+                post: updatedPost,
+                user: updateduser
               });
             }
           );
@@ -152,4 +159,5 @@ router.get("/:articleId/favourite", (req, res, next) => {
     }
   });
 });
+
 module.exports = router;

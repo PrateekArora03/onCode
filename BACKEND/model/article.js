@@ -9,7 +9,7 @@ const articleSchema = new Schema(
     tags: { type: [Schema.Types.ObjectId] },
     comment: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     views: { type: Number, default: 0 },
-    favourites: { type: Number, default: 0 }
+    favouritecount: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
