@@ -5,7 +5,7 @@ const Auth = require("../auth/index");
 
 //Get Current User
 router.get("/", Auth.verifyToken, (req, res, next) => {
-  User.findById(req.userid, (err, currentUser) => {
+  User.findById(req.userid, "-password -username", (err, currentUser) => {
     if (err) return next(err);
     res.status(200).json(currentUser);
   });
