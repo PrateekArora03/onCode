@@ -34,8 +34,6 @@ router.post("/new", (req, res, next) => {
     if (err) return next(err);
     if (tags.length != 0) {
       tags.forEach(tag => {
-        console.log("inside tags create");
-        // tag = tag.trim()[0].toUpperCase() + tag.slice(1).toLowerCase();
         Tag.findOneAndUpdate(
           { name: tag },
           { $push: { post: createdPost.id } },
@@ -114,30 +112,44 @@ router.delete("/:id", (req, res, next) => {
 router.get("/:articleId/favourite", (req, res, next) => {
   const articleId = req.params.articleId;
   User.findById(req.userid, (err, user) => {
+    if (err) return next(err);
     if (!user.favourites.includes(articleId)) {
       user.favourites.push(articleId);
+      Article.findByIdAndUpdate(
+        articleId,
+        { $inc: { favourites: 1 } },
+        { new: true },
+        (err, updatedPost) => {
+          if (err) return next(err);
+          res.status(201).json({
+            status: "success",
+            message: "favoutite added",
+            updatedPost
+          });
+        }
+      );
+    } else {
+      User.findByIdAndUpdate(
+        req.userid,
+        { $pull: { favourites: articleId } },
+        { new: true },
+        (err, updatedUser) => {
+          Article.findByIdAndUpdate(
+            articleId,
+            { $inc: { favourites: -1 } },
+            { new: true },
+            (err, updatedPost) => {
+              if (err) return next(err);
+              res.status(201).json({
+                status: "success",
+                message: "favoutite added",
+                updatedPost
+              });
+            }
+          );
+        }
+      );
     }
   });
-  // User.findByIdAndUpdate(
-  //   req.userid,
-  //   { $push: { favourites: articleId } },
-  //   { upsert: true, new: true },
-  //   (err, updatedUser) => {
-  //     if (err) return next(err);
-  //     Article.findByIdAndUpdate(
-  //       articleId,
-  //       { $inc: { favourites: 1 } },
-  //       { new: true },
-  //       (err, updatedPost) => {
-  //         if (err) return next(err);
-  //         res.status(201).json({
-  //           status: "success",
-  //           message: "favoutite added",
-  //           updatedPost
-  //         });
-  //       }
-  //     );
-  //   }
-  // );
 });
 module.exports = router;
