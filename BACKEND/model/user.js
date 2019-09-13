@@ -24,7 +24,7 @@ const userSchema = new Schema(
     tags: [{ type: Schema.Types.ObjectId, ref: "tag" }],
     designation: String,
     favourites: [{ type: Schema.Types.ObjectId, ref: "article" }],
-    followers: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    follower: [{ type: Schema.Types.ObjectId, ref: "user" }],
     following: [{ type: Schema.Types.ObjectId, ref: "user" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     social: {

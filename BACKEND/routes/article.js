@@ -4,7 +4,7 @@ const Article = require("../model/article");
 const Comment = require("../model/comment");
 const Tag = require("../model/tag");
 const User = require("../model/user");
-const auth = require("../auth/index");
+const Auth = require("../auth/index");
 
 //show single post
 router.get("/:id", (req, res, next) => {
@@ -20,7 +20,7 @@ router.get("/:id", (req, res, next) => {
   );
 });
 
-router.use(auth.verifyToken);
+router.use(Auth.verifyToken);
 
 // create post
 router.post("/new", (req, res, next) => {
