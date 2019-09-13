@@ -46,9 +46,9 @@ router.patch("/profileupdate", Auth.verifyToken, (req, res, next) => {
   });
 });
 //view user
-router.get("/:id", (req, res, next) => {
-  let id = req.params.id;
-  User.findById(id, (err, user) => {
+router.get("/:username", (req, res, next) => {
+  let username = req.params.username;
+  User.findOne({ username }, (err, user) => {
     if (err) return next(err);
     res.status(200).json(user);
   });
