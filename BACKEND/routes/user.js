@@ -10,11 +10,11 @@ router.get("/", Auth.verifyToken, (req, res, next) => {
     res.status(200).json(currentUser);
   });
 });
-
+//create user
 router.post("/", (req, res, next) => {
   User.create(req.body, (err, user) => {
     if (err) return next(err);
-    res.json({ status: "sucess", message: "user register" });
+    res.json({ status: "success", message: "user register" });
   });
 });
 

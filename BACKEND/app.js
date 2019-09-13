@@ -7,6 +7,7 @@ const indexRoutes = require("./routes/index");
 const userRoutes = require("./routes/user");
 const articleRoutes = require("./routes/article");
 const commentRoutes = require("./routes/comment");
+const profileRoutes = require("./routes/profile");
 
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, err => {
   err ? console.log(err) : console.log("connected to DB");
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", indexRoutes);
 app.use("/user", userRoutes);
 app.use("/blog", articleRoutes);
+app.use("/profiles", profileRoutes);
 // app.use(auth.verifyToken);
 app.use("/comment", commentRoutes);
 

@@ -15,12 +15,12 @@ router.post("/:username/follow", (req, res, next) => {
         .status(401)
         .json({ status: "success", message: "user not found" });
     }
-    if (req.userid == user.id) {
+    if (Object.is(req.userid, user.id)) {
       return res
         .status(401)
         .json({ status: "success", message: "Not able to follow youself" });
     }
-    if (user.following.includes(req.userid)) {
+    if (user.follower.includes(req.userid)) {
       return res
         .status(401)
         .json({ status: "success", message: "Already Follow" });
@@ -39,7 +39,8 @@ router.post("/:username/follow", (req, res, next) => {
           res.status(201).json({
             status: "success",
             message: "follower updated",
-            profile: followeruser
+            followeruser,
+            followingUser
           });
         }
       );
@@ -49,14 +50,16 @@ router.post("/:username/follow", (req, res, next) => {
 
 //Unfollow user
 router.delete("/:username/follow", (req, res, next) => {
+  let username = req.params.username;
   User.findOne({ username }, (err, user) => {
     if (err) return next(err);
+    console.log(err, user);
     if (!user) {
       return res
         .status(401)
         .json({ status: "success", message: "user not found" });
     }
-    if (req.userid == user.id) {
+    if (Object.is(req.userid, user.id)) {
       return res
         .status(401)
         .json({ status: "success", message: "Not able to unfollow youself" });
@@ -83,7 +86,8 @@ router.delete("/:username/follow", (req, res, next) => {
             res.status(201).json({
               status: "success",
               message: "unfollow updated",
-              profile: followeruser
+              followeruser,
+              followingUser
             });
           }
         );
