@@ -1,8 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Article = require("../model/article");
-const Comment = require("../model/comment");
-const Tag = require("../model/tag");
 const User = require("../model/user");
 const Auth = require("../auth/index");
 
@@ -39,9 +36,11 @@ router.post("/:username/follow", (req, res, next) => {
         { new: true },
         (err, followingUser) => {
           if (err) return next(err);
-          res
-            .status(201)
-            .json({ status: "success", message: "follower updated" });
+          res.status(201).json({
+            status: "success",
+            message: "follower updated",
+            profile: followeruser
+          });
         }
       );
     });
@@ -49,6 +48,48 @@ router.post("/:username/follow", (req, res, next) => {
 });
 
 //Unfollow user
-router.delete("/:username/follow", (req, res, next) => {});
+router.delete("/:username/follow", (req, res, next) => {
+  User.findOne({ username }, (err, user) => {
+    if (err) return next(err);
+    if (!user) {
+      return res
+        .status(401)
+        .json({ status: "success", message: "user not found" });
+    }
+    if (req.userid == user.id) {
+      return res
+        .status(401)
+        .json({ status: "success", message: "Not able to unfollow youself" });
+    }
+    if (!user.follower.includes(req.userid)) {
+      return res
+        .status(401)
+        .json({ status: "success", message: "not follow user" });
+    }
+    User.findByIdAndUpdate(
+      user.id,
+      { $pull: { follower: req.userid } },
+      { new: true },
+      (err, followeruser) => {
+        if (err) return next(err);
+        User.findByIdAndUpdate(
+          req.userid,
+          {
+            $pull: { following: followeruser.id }
+          },
+          { new: true },
+          (err, followingUser) => {
+            if (err) return next(err);
+            res.status(201).json({
+              status: "success",
+              message: "unfollow updated",
+              profile: followeruser
+            });
+          }
+        );
+      }
+    );
+  });
+});
 
 module.exports = router;
