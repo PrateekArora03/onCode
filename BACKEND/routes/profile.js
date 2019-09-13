@@ -53,7 +53,6 @@ router.delete("/:username/follow", (req, res, next) => {
   let username = req.params.username;
   User.findOne({ username }, (err, user) => {
     if (err) return next(err);
-    console.log(err, user);
     if (!user) {
       return res
         .status(401)
