@@ -5,9 +5,10 @@ const auth = require("./auth/index");
 require("dotenv").config();
 const indexRoutes = require("./routes/index");
 const userRoutes = require("./routes/user");
-const articleRoutes = require("./routes/article");
-const commentRoutes = require("./routes/comment");
-const profileRoutes = require("./routes/profile");
+const usersRoutes = require("./routes/users");
+const articleRoutes = require("./routes/articles");
+const commentRoutes = require("./routes/comments");
+const profileRoutes = require("./routes/profiles");
 
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, err => {
   err ? console.log(err) : console.log("connected to DB");
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRoutes);
 app.use("/user", userRoutes);
+app.use("/users", usersRoutes);
 app.use("/blog", articleRoutes);
 app.use("/profiles", profileRoutes);
 // app.use(auth.verifyToken);
