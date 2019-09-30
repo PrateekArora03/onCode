@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const Article = require("../model/article");
-const Comment = require("../model/comment");
-const Tag = require("../model/tag");
-const User = require("../model/user");
+const Article = require("../model/Article");
+const Comment = require("../model/Comment");
+const Tag = require("../model/Tag");
+const User = require("../model/User");
 const Auth = require("../auth/index");
 
 //show single post
-router.get("/:id", (req, res, next) => {
-  let id = req.params.id;
-  Article.findByIdAndUpdate(
-    id,
+router.get("/:slug", (req, res, next) => {
+  let slug = req.params.slug;
+  Article.findOneAndUpdate(
+    slug,
     { $inc: { views: 1 } },
     { new: true },
     (err, post) => {
@@ -25,15 +25,14 @@ router.use(Auth.verifyToken);
 // create post
 router.post("/new", (req, res, next) => {
   req.body.userid = req.userid;
-  console.log(req.body);
   let tags = req.body.tags ? req.body.tags.split(",") : [];
-  console.log(tags);
   let article = { ...req.body };
   article.tags = [];
   Article.create(article, (err, createdPost) => {
     if (err) return next(err);
     if (tags.length != 0) {
       tags.forEach(tag => {
+        tag = tag.toLowerCase();
         Tag.findOneAndUpdate(
           { name: tag },
           { $push: { post: createdPost.id } },
@@ -75,13 +74,13 @@ router.post("/new", (req, res, next) => {
   });
 });
 
-//update routes
-router.patch("/:id", (req, res, next) => {
-  let id = req.params.id;
-  Article.findById(id, (err, post) => {
+//update article
+router.patch("/:slug", (req, res, next) => {
+  let slug = req.params.slug;
+  Article.findOne(slug, (err, post) => {
     if (err) return next(err);
     if (post.userid == req.userid) {
-      Article.findByIdAndUpdate(id, req.body, (err, updatedPost) => {
+      Article.findByIdAndUpdate(post.id, req.body, (err, updatedPost) => {
         if (err) return next(err);
         res.status(200).json({ status: "success", message: "post updated" });
       });
@@ -91,14 +90,14 @@ router.patch("/:id", (req, res, next) => {
   });
 });
 //delete Article and comments
-router.delete("/:id", (req, res, next) => {
-  let id = req.params.id;
-  Article.findById(id, (err, article) => {
+router.delete("/:slug", (req, res, next) => {
+  let slug = req.params.slug;
+  Article.findOne(slug, (err, article) => {
     if (err) return next(err);
     if (article.userid == req.userid) {
-      Article.findByIdAndDelete(id, (err, deletedArticle) => {
+      Article.findByIdAndDelete(article.id, (err, deletedArticle) => {
         if (err) return next(err);
-        Comment.deleteMany({ post: id }, (err, deletedComment) => {
+        Comment.deleteMany({ post: article.id }, (err, deletedComment) => {
           if (err) return next(err);
           res.status(200).json({ status: "success", message: "post deleted" });
         });
@@ -110,53 +109,56 @@ router.delete("/:id", (req, res, next) => {
 });
 
 //Favorite Article
-router.get("/:articleId/favorite", (req, res, next) => {
-  let articleId = req.params.articleId;
-  User.findById(req.userid, (err, user) => {
-    if (err) return next(err);
-    if (!user.favourites.includes(articleId)) {
-      user.favourites.push(articleId);
-      user.save((err, updateduser) => {
-        if (err) return next(err);
-        Article.findByIdAndUpdate(
-          articleId,
-          { $inc: { favouritecount: 1 } },
-          { new: true },
-          (err, updatedPost) => {
-            if (err) return next(err);
-            res.status(201).json({
-              status: "success",
-              message: "favourite added",
-              post: updatedPost,
-              user: updateduser
-            });
-          }
-        );
-      });
-    } else {
-      User.findByIdAndUpdate(
-        req.userid,
-        { $pull: { favourites: articleId } },
-        { new: true },
-        (err, updateduser) => {
+router.get("/:slug/favorite", (req, res, next) => {
+  let slug = req.params.slug;
+  Article.findOne(slug, (err, article) => {
+    let articleId = article.id;
+    User.findById(req.userid, (err, user) => {
+      if (err) return next(err);
+      if (!user.favourites.includes(articleId)) {
+        user.favourites.push(articleId);
+        user.save((err, updateduser) => {
           if (err) return next(err);
           Article.findByIdAndUpdate(
             articleId,
-            { $inc: { favouritecount: -1 } },
+            { $inc: { favouritecount: 1 } },
             { new: true },
             (err, updatedPost) => {
               if (err) return next(err);
               res.status(201).json({
                 status: "success",
-                message: "favourite removed",
+                message: "favourite added",
                 post: updatedPost,
                 user: updateduser
               });
             }
           );
-        }
-      );
-    }
+        });
+      } else {
+        User.findByIdAndUpdate(
+          req.userid,
+          { $pull: { favourites: articleId } },
+          { new: true },
+          (err, updateduser) => {
+            if (err) return next(err);
+            Article.findByIdAndUpdate(
+              articleId,
+              { $inc: { favouritecount: -1 } },
+              { new: true },
+              (err, updatedPost) => {
+                if (err) return next(err);
+                res.status(201).json({
+                  status: "success",
+                  message: "favourite removed",
+                  post: updatedPost,
+                  user: updateduser
+                });
+              }
+            );
+          }
+        );
+      }
+    });
   });
 });
 

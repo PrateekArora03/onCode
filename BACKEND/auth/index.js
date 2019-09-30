@@ -2,7 +2,7 @@ var jwt = require("jsonwebtoken");
 
 exports.genarateToken = function(userid) {
   if (userid) {
-    return jwt.sign({ userid }, process.env.JWT_Secret, { expiresIn: "1h" });
+    return jwt.sign({ userid }, process.env.JWT_Secret, { expiresIn: "7d" });
   }
 };
 exports.verifyToken = function(req, res, next) {

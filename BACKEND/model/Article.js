@@ -4,9 +4,10 @@ const Schema = mongoose.Schema;
 const articleSchema = new Schema(
   {
     title: { type: String, required: true, minlength: 10 },
+    description: { type: String, required: true, minlength: 10 },
     post: { type: String, required: true, minlength: 10 },
-    userid: { type: Schema.Types.ObjectId, required: true },
-    tags: { type: [Schema.Types.ObjectId] },
+    userid: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    tags: { type: [Schema.Types.ObjectId], ref: "Tags" },
     comment: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     views: { type: Number, default: 0 },
     favouritecount: { type: Number, default: 0 },

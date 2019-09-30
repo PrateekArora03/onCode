@@ -19,7 +19,10 @@ const userSchema = new Schema(
       lowercase: true
     },
     password: { type: String, minlength: 4 },
-    photo: String,
+    photo: {
+      type: String,
+      default: "https://static.productionready.io/images/smiley-cyrus.jpg"
+    },
     bio: { type: String, minlength: 30, maxlength: 200 },
     tags: [{ type: Schema.Types.ObjectId, ref: "tag" }],
     designation: String,

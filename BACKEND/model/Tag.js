@@ -2,7 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const tagSchema = new Schema({
-  name: { type: String, required: true, minlength: 3, unique: true },
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    unique: true,
+    lowercase: true
+  },
   // photo: { type: String, required: true },
   post: [{ type: Schema.Types.ObjectId, ref: "article" }]
 });
