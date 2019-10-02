@@ -18,12 +18,12 @@ const userSchema = new Schema(
       required: true,
       lowercase: true
     },
-    password: { type: String, minlength: 4 },
+    password: { type: String, minlength: 4, required: true },
     photo: {
       type: String,
       default: "https://static.productionready.io/images/smiley-cyrus.jpg"
     },
-    bio: { type: String, minlength: 30, maxlength: 200 },
+    bio: { type: String, maxlength: 200 },
     tags: [{ type: Schema.Types.ObjectId, ref: "tag" }],
     designation: String,
     favourites: [{ type: Schema.Types.ObjectId, ref: "article" }],
@@ -32,7 +32,6 @@ const userSchema = new Schema(
     comments: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     social: {
       website: { type: String },
-      facebook: { type: String },
       twitter: { type: String },
       instagram: { type: String },
       github: { type: String },

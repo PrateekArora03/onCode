@@ -4,7 +4,7 @@ const app = express();
 const auth = require("./auth/index");
 require("dotenv").config();
 const apiRoutes = require("./routes/api");
-mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, err => {
+mongoose.connect(process.env.DB_CONNECTS, { useNewUrlParser: true }, err => {
   err ? console.log(err) : console.log("connected to DB");
 });
 mongoose.set("useCreateIndex", true);

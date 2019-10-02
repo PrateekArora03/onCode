@@ -12,7 +12,7 @@ const tagsRoutes = require("./tags");
 router.use("/", indexRoutes);
 router.use("/user", userRoutes);
 router.use("/users", usersRoutes);
-router.use("/blog", articleRoutes);
+router.use("/articles", articleRoutes);
 router.use("/profiles", profileRoutes);
 // router.use(auth.verifyToken);
 router.use("/comment", commentRoutes);

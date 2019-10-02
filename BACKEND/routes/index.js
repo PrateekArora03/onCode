@@ -8,7 +8,7 @@ router.get("/", (req, res, err) => {
     .limit(7)
     .exec((err, post) => {
       if (err) return next(err);
-      res.status(200).json(post);
+      res.status(200).json(post.reverse());
     });
 });
 

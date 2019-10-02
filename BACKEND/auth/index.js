@@ -12,7 +12,7 @@ exports.verifyToken = function(req, res, next) {
       if (err) {
         return res
           .status(400)
-          .json({ status: "fail", message: "invalid token" });
+          .json({ status: false, message: "invalid token" });
       }
       req.userid = user.userid;
       next();
@@ -20,6 +20,6 @@ exports.verifyToken = function(req, res, next) {
   } else {
     return res
       .status(401)
-      .json({ status: "failed", message: "Unauthorized access" });
+      .json({ status: false, message: "Unauthorized access" });
   }
 };

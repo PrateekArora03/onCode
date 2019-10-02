@@ -13,17 +13,21 @@ router.post("/", (req, res, next) => {
 
 router.post("/login", (req, res, next) => {
   let { email, password } = req.body;
+  if (!email || !password)
+    return res
+      .status(400)
+      .json({ status: false, message: "Please Fill Both Fields" });
   User.findOne({ email }, (err, user) => {
     if (err) return next(err);
     if (!user) {
       return res
         .status(400)
-        .json({ status: "failed", message: "Invaild email or user not found" });
+        .json({ status: false, message: "Invaild email or user not found" });
     }
     if (!user.isValidatePassword(password)) {
       return res
         .status(400)
-        .json({ status: "failed", message: "Invaild Password" });
+        .json({ status: false, message: "Invaild Password" });
     }
     const token = Auth.genarateToken(user.id);
     res.json({

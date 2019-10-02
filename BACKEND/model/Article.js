@@ -21,6 +21,7 @@ articleSchema.pre("save", function(next) {
     .toLowerCase()
     .split(" ")
     .join("-");
+  next();
 });
 
 const Article = mongoose.model("Article", articleSchema);

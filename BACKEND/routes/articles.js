@@ -30,9 +30,9 @@ router.post("/new", (req, res, next) => {
   article.tags = [];
   Article.create(article, (err, createdPost) => {
     if (err) return next(err);
-    if (tags.length != 0) {
+    if (tags.length) {
       tags.forEach(tag => {
-        tag = tag.toLowerCase();
+        tag = tag.toLowerCase().trim();
         Tag.findOneAndUpdate(
           { name: tag },
           { $push: { post: createdPost.id } },
@@ -53,14 +53,6 @@ router.post("/new", (req, res, next) => {
                   });
               }
             );
-
-            // option
-            var newArticle = new Article();
-            newArticle.title = "mdfhngfngnh";
-            newArticle.save(err, created);
-
-            createdPost.tags.push();
-            createdPost.save();
           }
         );
       });
